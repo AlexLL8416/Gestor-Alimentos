@@ -1,0 +1,5 @@
+Situarme en E:\Proyectos Porfolio\Gestor Alimentos
+
+Activar módulos con .\venv\Scripts\actívate
+
+Encender servidor con uvicorn app.main:app --reload

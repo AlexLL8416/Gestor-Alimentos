@@ -19,3 +19,11 @@ def crear_alimento(alimento: schemas.AlimentoCreate, db: Session = Depends(get_d
 @app.get("/alimentos/")
 def listar_alimentos(db:Session = Depends(get_db)):
     return crud.obtener_alimentos(db=db)
+
+@app.put("/alimentos/{id}")
+def actualiza_alimentos( id:int, alimento_actualizado:schemas.AlimentoUpdate, db:Session = Depends(get_db)):
+    return crud.actualizar_alimento(db=db, id=id,alimento_datos=alimento_actualizado)
+
+@app.delete("/alimentos/{id}")
+def actualiza_alimentos( id:int, db:Session = Depends(get_db)):
+    return crud.eliminar_alimento(db=db, id=id)
