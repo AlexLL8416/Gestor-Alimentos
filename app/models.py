@@ -15,6 +15,7 @@ alimento_receta = Table(
     "alimento_receta",
     Base.metadata,
     Column("id_alimento_receta",Integer,primary_key=True,autoincrement=True),
+    Column("cantidad",Integer,nullable=True),
     Column("id_receta",Integer,ForeignKey("recetas.id_receta"),nullable=False),
     Column("id_alimento",Integer,ForeignKey("alimentos.id_alimento"),nullable=False),
     UniqueConstraint("id_alimento", "id_receta", name="uq_alimento_receta")
