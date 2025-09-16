@@ -114,7 +114,6 @@ erDiagram
 - Agregar soporte para migraciones con Alembic 🛠️.  
 - Desplegar en la nube (ej. Railway, Render, Heroku) 🌐.  
 - Crear interfaz móvil o web conectada a la API 📱.  
-markdown
-Copiar código
+
 ## 👨‍💻 Autor
 Proyecto desarrollado por **Alejnado Lara Lara** ✨
