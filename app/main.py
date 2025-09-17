@@ -1,3 +1,4 @@
+# main.py
 from fastapi import FastAPI, Depends, HTTPException
 from sqlalchemy.orm import Session
 from . import models, schemas, crud
@@ -21,22 +22,22 @@ def crear_alimento(alimento: schemas.AlimentoCreate, db: Session = Depends(get_d
     return crud.crear_alimento(db=db, alimento=alimento)
 
 @app.get("/alimentos/", response_model=list[schemas.Alimento])
-def listar_alimentos(db:Session = Depends(get_db)):
+def listar_alimentos(db: Session = Depends(get_db)):
     return crud.obtener_alimentos(db=db)
 
 @app.get("/alimentos/{id}", response_model=schemas.Alimento)
-def listar_alimentos_por_id(id:int,db:Session = Depends(get_db)):
+def obtener_alimento_por_id(id: int, db: Session = Depends(get_db)):
     alimento = crud.obtener_alimento_por_id(db, id)
     if not alimento:
         raise HTTPException(status_code=404, detail="Alimento no encontrado")
     return alimento
 
 @app.put("/alimentos/{id}", response_model=schemas.Alimento)
-def actualiza_alimentos( id:int, alimento_actualizado:schemas.AlimentoUpdate, db:Session = Depends(get_db)):
-    return crud.actualizar_alimento(db=db, id=id,alimento_datos=alimento_actualizado)
+def actualizar_alimento(id: int, alimento_actualizado: schemas.AlimentoUpdate, db: Session = Depends(get_db)):
+    return crud.actualizar_alimento(db=db, id=id, alimento_datos=alimento_actualizado)
 
 @app.delete("/alimentos/{id}", response_model=schemas.Alimento)
-def actualiza_alimentos( id:int, db:Session = Depends(get_db)):
+def eliminar_alimento(id: int, db: Session = Depends(get_db)):
     return crud.eliminar_alimento(db=db, id=id)
 
 # ------------------
@@ -44,26 +45,26 @@ def actualiza_alimentos( id:int, db:Session = Depends(get_db)):
 # ------------------
 
 @app.post("/tiendas/", response_model=schemas.Tienda)
-def creat_tienda(tienda: schemas.TiendaCreate, db: Session = Depends(get_db)):
+def crear_tienda(tienda: schemas.TiendaCreate, db: Session = Depends(get_db)):
     return crud.crear_tienda(db=db, tienda=tienda)
 
 @app.get("/tiendas/", response_model=list[schemas.Tienda])
-def listar_tiendas(db:Session = Depends(get_db)):
+def listar_tiendas(db: Session = Depends(get_db)):
     return crud.obtener_tiendas(db=db)
 
 @app.get("/tiendas/{id}", response_model=schemas.Tienda)
-def listar_tiendas_por_id(id:int,db:Session = Depends(get_db)):
+def obtener_tienda_por_id(id: int, db: Session = Depends(get_db)):
     tienda = crud.obtener_tienda_por_id(db, id)
     if not tienda:
         raise HTTPException(status_code=404, detail="Tienda no encontrada")
     return tienda
 
 @app.put("/tiendas/{id}", response_model=schemas.Tienda)
-def actualiza_tiendas( id:int, tienda_actualizada:schemas.TiendaUpdate, db:Session = Depends(get_db)):
-    return crud.actualizar_tienda(db=db, id=id,tienda_datos=tienda_actualizada)
+def actualizar_tienda(id: int, tienda_actualizada: schemas.TiendaUpdate, db: Session = Depends(get_db)):
+    return crud.actualizar_tienda(db=db, id=id, tienda_datos=tienda_actualizada)
 
 @app.delete("/tiendas/{id}", response_model=schemas.Tienda)
-def eliminar_tienda( id:int, db:Session = Depends(get_db)):
+def eliminar_tienda(id: int, db: Session = Depends(get_db)):
     return crud.eliminar_tienda(db=db, id=id)
 
 # ------------------
@@ -71,30 +72,30 @@ def eliminar_tienda( id:int, db:Session = Depends(get_db)):
 # ------------------
 
 @app.post("/recetas/", response_model=schemas.Receta)
-def creat_receta(receta: schemas.RecetaCreate, db: Session = Depends(get_db)):
+def crear_receta(receta: schemas.RecetaCreate, db: Session = Depends(get_db)):
     return crud.crear_receta(db=db, receta=receta)
 
 @app.get("/recetas/", response_model=list[schemas.Receta])
-def listar_recetas(db:Session = Depends(get_db)):
+def listar_recetas(db: Session = Depends(get_db)):
     return crud.obtener_recetas(db=db)
 
 @app.get("/recetas/{id}", response_model=schemas.Receta)
-def listar_recetas_por_id(id:int,db:Session = Depends(get_db)):
+def obtener_receta_por_id(id: int, db: Session = Depends(get_db)):
     receta = crud.obtener_receta_por_id(db, id)
     if not receta:
         raise HTTPException(status_code=404, detail="Receta no encontrada")
     return receta
 
 @app.put("/recetas/{id}", response_model=schemas.Receta)
-def actualiza_recetas( id:int, receta_actualizada:schemas.RecetaUpdate, db:Session = Depends(get_db)):
-    return crud.actualizar_receta(db=db, id=id,receta_datos=receta_actualizada)
+def actualizar_receta(id: int, receta_actualizada: schemas.RecetaUpdate, db: Session = Depends(get_db)):
+    return crud.actualizar_receta(db=db, id=id, receta_datos=receta_actualizada)
 
 @app.delete("/recetas/{id}", response_model=schemas.Receta)
-def eliminar_receta( id:int, db:Session = Depends(get_db)):
+def eliminar_receta(id: int, db: Session = Depends(get_db)):
     return crud.eliminar_receta(db=db, id=id)
 
 # ------------------
-# RELACIONES
+# RELACIONES (por id)
 # ------------------
 
 @app.post("/alimentos/{id_alimento}/tiendas/{id_tienda}", response_model=schemas.Alimento)
@@ -103,4 +104,83 @@ def asociar_alimento_con_tienda(id_alimento: int, id_tienda: int, db: Session = 
 
 @app.post("/alimentos/{id_alimento}/recetas/{id_receta}", response_model=schemas.Alimento)
 def asociar_alimento_con_receta(id_alimento: int, id_receta: int, db: Session = Depends(get_db)):
-    return crud.asociar_alimento_receta(db, id_alimento, id_receta)
+    # por defecto cantidad = 1
+    return crud.asociar_alimento_receta(db, id_alimento, id_receta, cantidad=1)
+
+# -------------------
+# EDITAR POR NOMBRE
+# -------------------
+
+@app.put("/alimentos/nombre/{nombre}")
+def actualizar_alimento_nombre(nombre: str, alimento: schemas.AlimentoUpdate, db: Session = Depends(get_db)):
+    return crud.actualizar_alimento_por_nombre(db, nombre, alimento)
+
+@app.put("/tiendas/nombre/{nombre}")
+def actualizar_tienda_nombre(nombre: str, tienda: schemas.TiendaUpdate, db: Session = Depends(get_db)):
+    return crud.actualizar_tienda_por_nombre(db, nombre, tienda)
+
+@app.put("/recetas/nombre/{nombre}")
+def actualizar_receta_nombre(nombre: str, receta: schemas.RecetaUpdate, db: Session = Depends(get_db)):
+    return crud.actualizar_receta_por_nombre(db, nombre, receta)
+
+@app.put("/alimentos/{alimento_nombre}/tienda/{tienda_nombre}", response_model=schemas.Alimento)
+def update_alimento(alimento_nombre: str, tienda_nombre: str, alimento_update: schemas.AlimentoUpdate, db: Session = Depends(get_db)):
+    alimento = crud.update_alimento_by_nombre_and_tienda(db, alimento_nombre, tienda_nombre, alimento_update)
+    if not alimento:
+        raise HTTPException(status_code=404, detail="Alimento no encontrado en esa tienda")
+    return alimento
+
+# -------------------
+# RELACIONES POR NOMBRE (y cantidad para receta)
+# -------------------
+
+@app.post("/alimentos/{nombre_alimento}/tiendas/{nombre_tienda}")
+def asociar_alimento_tienda_nombre(nombre_alimento: str, nombre_tienda: str, db: Session = Depends(get_db)):
+    return crud.asociar_alimento_tienda_por_nombre(db, nombre_alimento, nombre_tienda)
+
+@app.post("/alimentos/{nombre_alimento}/recetas/{nombre_receta}")
+def asociar_alimento_receta_nombre(nombre_alimento: str, nombre_receta: str, cantidad: int = 1, db: Session = Depends(get_db)):
+    return crud.asociar_alimento_receta_por_nombre(db, nombre_alimento, nombre_receta, cantidad)
+
+# -------------------
+# FILTRO: ALIMENTOS CON/SIN STOCK
+# -------------------
+
+@app.get("/alimentos/sin_stock/", response_model=list[schemas.Alimento])
+def listar_alimentos_sin_stock(db: Session = Depends(get_db)):
+    return crud.obtener_alimentos_sin_stock(db)
+
+@app.get("/alimentos/con_stock/", response_model=list[schemas.Alimento])
+def listar_alimentos_con_stock(db: Session = Depends(get_db)):
+    return crud.obtener_alimentos_con_stock(db)
+
+# -------------------
+# GET POR NOMBRE
+# -------------------
+
+@app.get("/alimentos/nombre/{nombre}", response_model=schemas.Alimento)
+def obtener_alimento_por_nombre(nombre: str, db: Session = Depends(get_db)):
+    alimento = crud.obtener_alimento_por_nombre(db, nombre)
+    if not alimento:
+        raise HTTPException(status_code=404, detail="Alimento no encontrado")
+    return alimento
+
+@app.get("/tiendas/nombre/{nombre}", response_model=schemas.Tienda)
+def obtener_tienda_por_nombre(nombre: str, db: Session = Depends(get_db)):
+    tienda = crud.obtener_tienda_por_nombre(db, nombre)
+    if not tienda:
+        raise HTTPException(status_code=404, detail="Tienda no encontrada")
+    return tienda
+
+@app.get("/recetas/nombre/{nombre}", response_model=schemas.Receta)
+def obtener_receta_por_nombre(nombre: str, db: Session = Depends(get_db)):
+    receta = crud.obtener_receta_por_nombre(db, nombre)
+    if not receta:
+        raise HTTPException(status_code=404, detail="Receta no encontrada")
+    return receta
+
+# --------------------- FUNCION COMPLEJA ---------------------
+
+@app.get("/recetas/con_alimentos_disponibles/", response_model=list[schemas.Receta])
+def listar_recetas_con_alimentos_disponibles(db: Session = Depends(get_db)):
+    return crud.obtener_recetas_con_alimentos_disponibles(db)

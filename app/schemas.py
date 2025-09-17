@@ -1,4 +1,5 @@
-from pydantic import BaseModel
+# schemas.py
+from pydantic import BaseModel, Field, validator
 from datetime import date
 from typing import Optional, List
 
@@ -7,9 +8,15 @@ from typing import Optional, List
 # ------------------
 class AlimentoBase(BaseModel):
     nombre_alimento: str
-    cantidad: int
+    cantidad: int = Field(ge=0, description="Cantidad debe ser >= 0")
     caducidad: Optional[date] = None
     congelado: bool
+
+    @validator("caducidad")
+    def caducidad_futura(cls, v):
+        if v is not None and v <= date.today():
+            raise ValueError("La fecha de caducidad debe ser futura")
+        return v
 
 class AlimentoCreate(AlimentoBase):
     pass
@@ -20,8 +27,24 @@ class AlimentoUpdate(BaseModel):
     caducidad: Optional[date] = None
     congelado: Optional[bool] = None
 
+class TiendaBrief(BaseModel):
+    id_tienda: int
+    nombre_tienda: str
+
+    class Config:
+        from_attributes = True
+
+class RecetaBrief(BaseModel):
+    id_receta: int
+    nombre_receta: str
+
+    class Config:
+        from_attributes = True
+
 class Alimento(AlimentoBase):
     id_alimento: int
+    tiendas: Optional[List[TiendaBrief]] = None
+    recetas: Optional[List[RecetaBrief]] = None
 
     class Config:
         from_attributes = True
@@ -44,6 +67,7 @@ class TiendaUpdate(BaseModel):
 
 class Tienda(TiendaBase):
     id_tienda: int
+    alimentos: Optional[List[Alimento]] = None
 
     class Config:
         from_attributes = True
@@ -66,6 +90,7 @@ class RecetaUpdate(BaseModel):
 
 class Receta(RecetaBase):
     id_receta: int
+    alimentos: Optional[List[Alimento]] = None
 
     class Config:
         from_attributes = True
