@@ -1,17 +1,37 @@
-# main.py
 from fastapi import FastAPI, Depends, HTTPException
 from sqlalchemy.orm import Session
+from sqlalchemy import select, join
 from . import models, schemas, crud
 from .database import engine, get_db
+from fastapi.middleware.cors import CORSMiddleware
+from fastapi.staticfiles import StaticFiles
+from fastapi.responses import FileResponse
+import os
 
 # Crear las tablas en la base de datos si no existen
 models.Base.metadata.create_all(bind=engine)
 
 app = FastAPI()
 
+# Permitir peticiones desde el frontend (ej: localhost)
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["http://0.0.0.0:8000"],
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
+
+# Ruta absoluta a la carpeta frontend
+BASE_DIR = os.path.dirname(os.path.abspath(__file__))
+FRONTEND_DIR = os.path.join(BASE_DIR, "..", "frontend")
+
+# Montar la carpeta "frontend" como archivos estáticos
+app.mount("/static", StaticFiles(directory=FRONTEND_DIR), name="static")
+
 @app.get("/")
-def read_root():
-    return {"mensaje": "API Gestor de Alimentos funcionando 🚀"}
+def serve_index():
+    return FileResponse(os.path.join(FRONTEND_DIR, "index.html"))
 
 # ------------------
 # ALIMENTOS
@@ -36,9 +56,9 @@ def obtener_alimento_por_id(id: int, db: Session = Depends(get_db)):
 def actualizar_alimento(id: int, alimento_actualizado: schemas.AlimentoUpdate, db: Session = Depends(get_db)):
     return crud.actualizar_alimento(db=db, id=id, alimento_datos=alimento_actualizado)
 
-@app.delete("/alimentos/{id}", response_model=schemas.Alimento)
-def eliminar_alimento(id: int, db: Session = Depends(get_db)):
-    return crud.eliminar_alimento(db=db, id=id)
+@app.delete("/alimentos/{nombre}", response_model=schemas.Alimento)
+def eliminar_alimento(nombre: str, db: Session = Depends(get_db)):
+    return crud.eliminar_alimento(db=db, nombre=nombre)
 
 # ------------------
 # TIENDAS
@@ -63,9 +83,9 @@ def obtener_tienda_por_id(id: int, db: Session = Depends(get_db)):
 def actualizar_tienda(id: int, tienda_actualizada: schemas.TiendaUpdate, db: Session = Depends(get_db)):
     return crud.actualizar_tienda(db=db, id=id, tienda_datos=tienda_actualizada)
 
-@app.delete("/tiendas/{id}", response_model=schemas.Tienda)
-def eliminar_tienda(id: int, db: Session = Depends(get_db)):
-    return crud.eliminar_tienda(db=db, id=id)
+@app.delete("/tiendas/{nombre}", response_model=schemas.Tienda)
+def eliminar_tienda(nombre: str, db: Session = Depends(get_db)):
+    return crud.eliminar_tienda(db=db, nombre=nombre)
 
 # ------------------
 # RECETAS
@@ -90,14 +110,14 @@ def obtener_receta_por_id(id: int, db: Session = Depends(get_db)):
 def actualizar_receta(id: int, receta_actualizada: schemas.RecetaUpdate, db: Session = Depends(get_db)):
     return crud.actualizar_receta(db=db, id=id, receta_datos=receta_actualizada)
 
-@app.delete("/recetas/{id}", response_model=schemas.Receta)
-def eliminar_receta(id: int, db: Session = Depends(get_db)):
-    return crud.eliminar_receta(db=db, id=id)
+@app.delete("/recetas/{nombre}", response_model=schemas.Receta)
+def eliminar_receta(nombre: str, db: Session = Depends(get_db)):
+    return crud.eliminar_receta(db=db, nombre=nombre)
 
 # ------------------
 # RELACIONES (por id)
 # ------------------
-
+'''
 @app.post("/alimentos/{id_alimento}/tiendas/{id_tienda}", response_model=schemas.Alimento)
 def asociar_alimento_con_tienda(id_alimento: int, id_tienda: int, db: Session = Depends(get_db)):
     return crud.asociar_alimento_tienda(db, id_alimento, id_tienda)
@@ -106,7 +126,7 @@ def asociar_alimento_con_tienda(id_alimento: int, id_tienda: int, db: Session = 
 def asociar_alimento_con_receta(id_alimento: int, id_receta: int, db: Session = Depends(get_db)):
     # por defecto cantidad = 1
     return crud.asociar_alimento_receta(db, id_alimento, id_receta, cantidad=1)
-
+'''
 # -------------------
 # EDITAR POR NOMBRE
 # -------------------
@@ -178,6 +198,24 @@ def obtener_receta_por_nombre(nombre: str, db: Session = Depends(get_db)):
     if not receta:
         raise HTTPException(status_code=404, detail="Receta no encontrada")
     return receta
+
+# --------------------- GET RELACIONES ---------------------
+
+# Listar todas las relaciones alimento-receta
+@app.get("/alimentos-recetas/")
+def listar_alimentos_recetas(db: Session = Depends(get_db)):
+    j = join(models.alimento_receta, models.Alimento, models.alimento_receta.c.id_alimento == models.Alimento.id_alimento)\
+        .join(models.Receta, models.alimento_receta.c.id_receta == models.Receta.id_receta)
+    sel = select(models.Alimento.nombre_alimento, models.Receta.nombre_receta, models.alimento_receta.c.cantidad).select_from(j)
+    rows = db.execute(sel).all()
+
+    return [{"alimento": r.nombre_alimento, "receta": r.nombre_receta, "cantidad": r.cantidad} for r in rows]
+
+
+# Listar todas las relaciones alimento-tienda
+@app.get("/alimentos-tiendas/")
+def listar_alimentos_tiendas(db: Session = Depends(get_db)):
+    return crud.obtener_alimentos_tiendas(db)
 
 # --------------------- FUNCION COMPLEJA ---------------------
 

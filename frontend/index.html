@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <title>Gestor de Alimentos</title>
+  <link rel="stylesheet" href="/static/styles.css">
+</head>
+<body>
+  <h1>🍎 Gestor de Alimentos</h1>
+  
+  <div id="menu-principal">
+    <button onclick="abrirEntidad('alimentos')">Alimentos</button>
+    <button onclick="abrirEntidad('tiendas')">Tiendas</button>
+    <button onclick="abrirEntidad('recetas')">Recetas</button>
+    <button onclick="abrirEntidad('alimentos-recetas')">Relaciones A-R</button>
+    <button onclick="abrirEntidad('alimentos-tiendas')">Relaciones A-T</button>
+  </div>
+
+  <div id="menu-entidad"></div>
+  <div id="formulario"></div>
+  <div id="resultado"></div>
+
+  <script src="/static/script.js"></script>
+</body>
+</html>

@@ -1,7 +1,7 @@
 # crud.py
 from sqlalchemy.orm import Session
 from fastapi import HTTPException
-from sqlalchemy import select, insert, update
+from sqlalchemy import select, insert, update, func
 from . import models, schemas
 
 # ------------------
@@ -39,8 +39,8 @@ def actualizar_alimento(db: Session, id: int, alimento_datos: schemas.AlimentoUp
     db.refresh(alimento)
     return alimento
 
-def eliminar_alimento(db: Session, id: int):
-    alimento = db.query(models.Alimento).filter(models.Alimento.id_alimento == id).first()
+def eliminar_alimento(db: Session, nombre: str):
+    alimento = db.query(models.Alimento).filter(models.Alimento.nombre_alimento == nombre).first()
     if not alimento:
         raise HTTPException(status_code=404, detail="Alimento no encontrado")
     db.delete(alimento)
@@ -87,8 +87,8 @@ def actualizar_tienda(db: Session, id: int, tienda_datos: schemas.TiendaUpdate):
     db.refresh(tienda)
     return tienda
 
-def eliminar_tienda(db: Session, id: int):
-    tienda = db.query(models.Tienda).filter(models.Tienda.id_tienda == id).first()
+def eliminar_tienda(db: Session, nombre: str):
+    tienda = db.query(models.Tienda).filter(models.Tienda.nombre_tienda == nombre).first()
     if not tienda:
         raise HTTPException(status_code=404, detail="Tienda no encontrada")
     db.delete(tienda)
@@ -129,8 +129,8 @@ def actualizar_receta(db: Session, id: int, receta_datos: schemas.RecetaUpdate):
     db.refresh(receta)
     return receta
 
-def eliminar_receta(db: Session, id: int):
-    receta = db.query(models.Receta).filter(models.Receta.id_receta == id).first()
+def eliminar_receta(db: Session, nombre: str):
+    receta = db.query(models.Receta).filter(models.Receta.nombre_receta == nombre).first()
     if not receta:
         raise HTTPException(status_code=404, detail="Receta no encontrada")
     db.delete(receta)
@@ -318,17 +318,30 @@ def asociar_alimento_receta_por_nombre(db: Session, nombre_alimento: str, nombre
     db.refresh(alimento)
     return alimento
 
+# -------------------
+# GET RELACIONES
+# -------------------
+
+def obtener_alimentos_recetas(db: Session):
+    sel = select(
+        models.alimento_receta.c.id_alimento,
+        models.alimento_receta.c.id_receta,
+        models.alimento_receta.c.cantidad
+    )
+    return db.execute(sel).all()
+
+def obtener_alimentos_tiendas(db: Session):
+    sel = select(
+        models.alimento_tienda.c.id_alimento,
+        models.alimento_tienda.c.id_tienda
+    )
+    return db.execute(sel).all()
+
 # --------------------- FUNCION COMPLEJA ---------------------
 
 def obtener_recetas_con_alimentos_disponibles(db: Session):
     """
     Devuelve todas las recetas que tienen al menos un alimento con cantidad > 0
     """
-    return (
-        db.query(models.Receta)
-        .join(models.alimento_receta, models.Receta.id_receta == models.alimento_receta.c.id_receta)
-        .join(models.Alimento, models.Alimento.id_alimento == models.alimento_receta.c.id_alimento)
-        .filter(models.Alimento.cantidad > 0)
-        .distinct()
-        .all()
-    )
+    recetas = db.query(models.Receta).join(models.Receta.alimentos).group_by(models.Receta.id_receta).having(func.min(models.Alimento.cantidad) > 0).all()
+    return recetas
