@@ -204,18 +204,32 @@ def obtener_receta_por_nombre(nombre: str, db: Session = Depends(get_db)):
 # Listar todas las relaciones alimento-receta
 @app.get("/alimentos-recetas/")
 def listar_alimentos_recetas(db: Session = Depends(get_db)):
-    j = join(models.alimento_receta, models.Alimento, models.alimento_receta.c.id_alimento == models.Alimento.id_alimento)\
-        .join(models.Receta, models.alimento_receta.c.id_receta == models.Receta.id_receta)
-    sel = select(models.Alimento.nombre_alimento, models.Receta.nombre_receta, models.alimento_receta.c.cantidad).select_from(j)
-    rows = db.execute(sel).all()
+    results = db.execute(
+        select(
+            models.Alimento.nombre_alimento.label("alimento"),
+            models.Receta.nombre_receta.label("receta")
+        )
+        .join(models.alimento_receta, models.Alimento.id_alimento == models.alimento_receta.c.id_alimento)
+        .join(models.Receta, models.Receta.id_receta == models.alimento_receta.c.id_receta)
+    ).mappings().all()
 
-    return [{"alimento": r.nombre_alimento, "receta": r.nombre_receta, "cantidad": r.cantidad} for r in rows]
+    return results
 
 
 # Listar todas las relaciones alimento-tienda
 @app.get("/alimentos-tiendas/")
 def listar_alimentos_tiendas(db: Session = Depends(get_db)):
-    return crud.obtener_alimentos_tiendas(db)
+    results = db.execute(
+        select(models.Alimento.nombre_alimento, models.Tienda.nombre_tienda)
+        .join(models.alimento_tienda, models.Alimento.id_alimento == models.alimento_tienda.c.id_alimento)
+        .join(models.Tienda, models.Tienda.id_tienda == models.alimento_tienda.c.id_tienda)
+    ).all()
+
+    relaciones = [
+        {"alimento": row[0], "tienda": row[1]}   # usar índices
+        for row in results
+    ]
+    return relaciones
 
 # --------------------- FUNCION COMPLEJA ---------------------
 
