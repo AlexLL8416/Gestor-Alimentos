@@ -48,7 +48,7 @@ gestor-alimentos/
 ## ⚙️ Instalación y ejecución
 
 # 1. Clonar el repositorio
-[git clone https://github.com/tuusuario/gestor-alimentos.git](https://github.com/AlexLL8416/Gestor-Alimentos)
+[git clone https://github.com/AlexLL8416/gestor-alimentos.git](https://github.com/AlexLL8416/Gestor-Alimentos)
 cd gestor-alimentos
 
 # 2. Crear un entorno virtual e instalar dependencias
