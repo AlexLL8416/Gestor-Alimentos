@@ -17,20 +17,32 @@ La idea es poder **controlar tu nevera desde el móvil** sin tener que mirarla f
 
 Todo esto se ejecuta en un **servidor local** 🚀.
 
-## 📂 Archivos principales
+## 📂 Estructura del proyecto
 
-- `main.py` → define los **endpoints de la API** con FastAPI.  
-- `crud.py` → funciones para crear, leer, actualizar y eliminar (CRUD) alimentos, recetas y tiendas.  
-- `models.py` → modelos de base de datos con SQLAlchemy, incluidas las relaciones many-to-many.  
-- `schemas.py` → modelos de validación y respuesta con Pydantic.  
-- `database.py` → configuración de la base de datos y conexión con PostgreSQL.  
+gestor-alimentos/
+│── app/
+│   ├── main.py        # Endpoints de la API (FastAPI)
+│   ├── crud.py        # Funciones CRUD para alimentos, recetas y tiendas
+│   ├── models.py      # Modelos SQLAlchemy + relaciones
+│   ├── schemas.py     # Modelos Pydantic (entrada/salida de datos)
+│   ├── database.py    # Configuración de la base de datos PostgreSQL
+│── frontend/
+│   ├── index.html     # Interfaz web con botones
+│   └── script.js      # Lógica para llamar a la API desde el navegador
+│   └── syles.css      # Haz que la interfaz se vea bonita y responsive
+│── requirements.txt   # Dependencias del proyecto
+│── run.bat            # Enciende el servidor y activa ngrok
+│── README.md          # Documentación
+
 
 ## 🛠️ Tecnologías utilizadas
-- [FastAPI](https://fastapi.tiangolo.com/) ⚡
-- [SQLAlchemy](https://www.sqlalchemy.org/) 🗄️
-- [Pydantic](https://docs.pydantic.dev/) ✅
-- [PostgreSQL](https://www.postgresql.org/) 🐘
-- [Uvicorn](https://www.uvicorn.org/) 🚀
+- [FastAPI](https://fastapi.tiangolo.com/) ⚡ → Framework backend para construir la API REST.  
+- [SQLAlchemy](https://www.sqlalchemy.org/) 🗄️ → ORM para interactuar con la base de datos.  
+- [Pydantic](https://docs.pydantic.dev/) ✅ → Validación de datos y esquemas.  
+- [PostgreSQL](https://www.postgresql.org/) 🐘 → Base de datos relacional.  
+- [Uvicorn](https://www.uvicorn.org/) 🚀 → Servidor ASGI para ejecutar FastAPI.  
+- [HTML](https://developer.mozilla.org/docs/Web/HTML) + [JavaScript](https://developer.mozilla.org/docs/Web/JavaScript) 🌐 → Frontend sencillo para interactuar con la API.  
+- [ngrok](https://ngrok.com/) 🌍 → Exponer el servidor local a Internet de forma segura.  
 
 ## ⚙️ Instalación y ejecución
 
@@ -52,6 +64,10 @@ postgresql+psycopg2://postgres:1234@localhost:5432/gestor_alimentos
 
 # 4. Levantar el servidor
 uvicorn app.main:app --reload
+
+# 5. Abrir el frontend
+Abre este archivo en tu navegador
+frontend/index.html
 
 ## 📖 Documentación interactiva
 - Swagger UI → [http://127.0.0.1:8000/docs](http://127.0.0.1:8000/docs)  
@@ -110,10 +126,10 @@ erDiagram
     ALIMENTO ||--o{ RECETA : "se usa en"
 ```
 ## 🚀 Futuras mejoras
-- Implementar autenticación de usuarios 🔑.  
-- Agregar soporte para migraciones con Alembic 🛠️.  
-- Desplegar en la nube (ej. Railway, Render, Heroku) 🌐.  
-- Crear interfaz móvil o web conectada a la API 📱.  
+- Portar a una aplicación para iOs de forma que el servidor esté de forma local en el dispositivo
+- Mejorar frontend
+- Conexión con APIs de supermercados
+- Avisos de caducidad
 
 ## 👨‍💻 Autor
 Proyecto desarrollado por **Alejnado Lara Lara** ✨
