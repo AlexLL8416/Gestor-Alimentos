@@ -18,21 +18,22 @@ La idea es poder **controlar tu nevera desde el móvil** sin tener que mirarla f
 Todo esto se ejecuta en un **servidor local** 🚀.
 
 ## 📂 Estructura del proyecto
-
+```
 gestor-alimentos/
 │── app/
 │   ├── main.py        # Endpoints de la API (FastAPI)
 │   ├── crud.py        # Funciones CRUD para alimentos, recetas y tiendas
 │   ├── models.py      # Modelos SQLAlchemy + relaciones
 │   ├── schemas.py     # Modelos Pydantic (entrada/salida de datos)
-│   ├── database.py    # Configuración de la base de datos PostgreSQL
+│   └── database.py    # Configuración de la base de datos PostgreSQL
 │── frontend/
 │   ├── index.html     # Interfaz web con botones
-│   └── script.js      # Lógica para llamar a la API desde el navegador
+│   ├── script.js      # Lógica para llamar a la API desde el navegador
 │   └── syles.css      # Haz que la interfaz se vea bonita y responsive
 │── requirements.txt   # Dependencias del proyecto
 │── run.bat            # Enciende el servidor y activa ngrok
 │── README.md          # Documentación
+```
 
 
 ## 🛠️ Tecnologías utilizadas
