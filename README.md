@@ -32,7 +32,7 @@ gestor-alimentos/
 │   └── syles.css      # Haz que la interfaz se vea bonita y responsive
 │── requirements.txt   # Dependencias del proyecto
 │── run.bat            # Enciende el servidor y activa ngrok
-│── README.md          # Documentación
+└── README.md          # Documentación
 ```
 
 
