@@ -48,7 +48,7 @@ gestor-alimentos/
 ## ⚙️ Instalación y ejecución
 
 # 1. Clonar el repositorio
-git clone https://github.com/tuusuario/gestor-alimentos.git
+[git clone https://github.com/tuusuario/gestor-alimentos.git](https://github.com/AlexLL8416/Gestor-Alimentos)
 cd gestor-alimentos
 
 # 2. Crear un entorno virtual e instalar dependencias
@@ -61,14 +61,13 @@ pip install -r requirements.txt
 # 3. Configurar la base de datos en PostgreSQL
 Crea una base de datos llamada gestor_alimentos.
 Ajusta usuario y contraseña en database.py si es necesario.
-postgresql+psycopg2://postgres:1234@localhost:5432/gestor_alimentos
+postgresql+psycopg2://postgres:CONTRASEÑA@localhost:5432/gestor_alimentos
 
 # 4. Levantar el servidor
 uvicorn app.main:app --reload
 
 # 5. Abrir el frontend
-Abre este archivo en tu navegador
-frontend/index.html
+Abrir enlace proporcionado por run.bat o hacer click + ctrl en la ip de uvicorn.
 
 ## 📖 Documentación interactiva
 - Swagger UI → [http://127.0.0.1:8000/docs](http://127.0.0.1:8000/docs)  
